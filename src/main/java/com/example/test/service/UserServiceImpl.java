@@ -4,6 +4,7 @@ import com.example.test.entity.User;
 import com.example.test.exception.*;
 import com.example.test.model.UserDTO;
 import com.example.test.repository.UserRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,12 @@ public class UserServiceImpl  implements UserService {
         this.mapper = mapper;
     }
 
+    /**
+     * Get user by its id
+     * @param id the user id
+     * @return a user Object if exist in database
+     * @throws UserNotFoundException if user not exist
+     */
     @Override
     public UserDTO getUserById(Long id) {
         Optional<User> user = repository.findById(id);
@@ -38,6 +45,11 @@ public class UserServiceImpl  implements UserService {
         return mapper.map(user.get(), UserDTO.class);
     }
 
+    /**
+     * Create user
+     * @param userDTO Container for all user data
+     * @return Container of all data from the created user
+     */
     @Override
     public UserDTO createUser(UserDTO userDTO) {
         checkData(userDTO);
@@ -46,12 +58,20 @@ public class UserServiceImpl  implements UserService {
         return mapper.map(repository.save(user), UserDTO.class);
     }
 
+    /**
+     * Format all user data
+     * @param user Container for all user data
+     */
     private void formatUserData(UserDTO user) {
         user.setName(formatUserName(user.getName().toLowerCase()));
         user.setCountryResidency(capitalize(user.getCountryResidency().toLowerCase()));
         user.setGender(capitalize(user.getGender().toLowerCase()));
     }
 
+    /***
+     * Simple method to check every data from the container is right
+     * @param userDTO Container of all data from user
+     */
     private void checkData(UserDTO userDTO) {
         checkName(userDTO.getName());
         checkBirthdate(userDTO.getBirthdate());
@@ -60,12 +80,22 @@ public class UserServiceImpl  implements UserService {
         checkPhoneNumber(userDTO.getPhoneNumber());
     }
 
+    /**
+     * Check if username is not blank
+     * @param name the name of the user
+     * @throws InvalidUsernameException if name is blank
+     */
     private void checkName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new InvalidUserNameException("You must put a name");
+        if (StringUtils.isBlank(name)) {
+            throw new InvalidUsernameException("You must put a name");
         }
     }
 
+    /**
+     * Check if birthdate is not null or user is younger than legal age
+     * @param birthdate birthdate of the user
+     * @throws InvalidBirthdateException if birthdate is invalid
+     */
     private void checkBirthdate(LocalDate birthdate) {
         LocalDate curDate = LocalDate.now();
         if (birthdate == null) {
@@ -76,6 +106,11 @@ public class UserServiceImpl  implements UserService {
         }
     }
 
+    /**
+     * Check if country correspond to France
+     * @param countryResidency the country residency of the user
+     * @throws InvalidCountryResidencyException if country isn't valid
+     */
     private void checkCountryResidency(String countryResidency) {
         if( countryResidency == null) {
             throw new InvalidCountryResidencyException("Country residency cannot be null");
@@ -85,6 +120,11 @@ public class UserServiceImpl  implements UserService {
         }
     }
 
+    /**
+     * Check if gender correspond to Male, Female or Other and nothing else
+     * @param gender the gender of the user
+     * @throws InvalidGenderException if the gender isn't valid
+     */
     private void checkGender(String gender) {
         String female = "female";
         String male = "male";
@@ -96,6 +136,11 @@ public class UserServiceImpl  implements UserService {
         }
     }
 
+    /**
+     * Check if phone number is a valid format
+     * @param phoneNumber the phone number of the user
+     * @throws InvalidPhoneNumberException if phone number isn't valid
+     */
     private void checkPhoneNumber(String phoneNumber) {
         String regex = "^(?:(?:\\+|00)33[\\s.-]{0,3}(?:\\(0\\)[\\s.-]{0,3})?|0)[1-9](?:(?:[\\s.-]?\\d{2}){4}|\\d{2}(?:[\\s.-]?\\d{3}){2})$";
         Pattern pattern = Pattern.compile(regex);
@@ -107,6 +152,11 @@ public class UserServiceImpl  implements UserService {
         }
     }
 
+    /**
+     * Format username to be presentable in database
+     * @param name the name of the user
+     * @return a well formatted name
+     */
     private String formatUserName(String name) {
         StringBuilder formated = new StringBuilder();
         String[] names = null;

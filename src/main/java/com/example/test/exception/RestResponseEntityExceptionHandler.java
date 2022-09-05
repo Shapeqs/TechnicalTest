@@ -7,14 +7,20 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.HashMap;
-import java.util.Map;
-
+/**
+ * Controller Adviser to handle all exceptions to the application
+ * @author Clement Querre
+ */
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
+    /**
+     * Catch exception for creation user request
+     * @param exception the exception thrown
+     * @return an ResponseEntity with the correct Bad Request status and an exception message
+     */
     @ExceptionHandler(value = {
-            InvalidUserNameException.class,
+            InvalidUsernameException.class,
             InvalidBirthdateException.class,
             InvalidCountryResidencyException.class,
             InvalidPhoneNumberException.class,
@@ -24,6 +30,11 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return ResponseHandler.createResponseEntity(exception.getMessage(), HttpStatus.BAD_REQUEST, null);
     }
 
+    /**
+     * Catch exception for creation request
+     * @param exception the exception thrown
+     * @return an ResponseEntity with the correct Not Found status and an exception message
+     */
     @ExceptionHandler(value = {UserNotFoundException.class})
     protected ResponseEntity<Object> handleGetUserExceptions(RuntimeException exception) {
         return ResponseHandler.createResponseEntity(exception.getMessage(), HttpStatus.NOT_FOUND, null);
