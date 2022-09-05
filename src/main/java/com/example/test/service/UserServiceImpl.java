@@ -33,7 +33,7 @@ public class UserServiceImpl  implements UserService {
     public UserDTO getUserById(Long id) {
         Optional<User> user = repository.findById(id);
         if (user.isEmpty()) {
-            return null;
+            throw new UserNotFoundException("User do not exist");
         }
         return mapper.map(user.get(), UserDTO.class);
     }

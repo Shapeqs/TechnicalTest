@@ -1,5 +1,6 @@
 package com.example.test.exception;
 
+import com.example.test.response.ResponseHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -12,21 +13,19 @@ import java.util.Map;
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = { InvalidUserNameException.class, InvalidBirthdateException.class,
-            InvalidCountryResidencyException.class, InvalidPhoneNumberException.class, InvalidGenderException.class})
+    @ExceptionHandler(value = {
+            InvalidUserNameException.class,
+            InvalidBirthdateException.class,
+            InvalidCountryResidencyException.class,
+            InvalidPhoneNumberException.class,
+            InvalidGenderException.class
+    })
     protected ResponseEntity<Object> handleCreateUserExceptions(RuntimeException exception) {
-        return getResponseEntity(HttpStatus.BAD_REQUEST, exception.getMessage());
+        return ResponseHandler.createResponseEntity(exception.getMessage(), HttpStatus.BAD_REQUEST, null);
     }
 
-    @ExceptionHandler(value = { UserNotFoundException.class })
+    @ExceptionHandler(value = {UserNotFoundException.class})
     protected ResponseEntity<Object> handleGetUserExceptions(RuntimeException exception) {
-        return getResponseEntity(HttpStatus.NOT_FOUND, exception.getMessage());
-    }
-
-    private ResponseEntity<Object> getResponseEntity(HttpStatus status, String message) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("status", status.value());
-        map.put("message", message);
-        return new ResponseEntity<>(map, status);
+        return ResponseHandler.createResponseEntity(exception.getMessage(), HttpStatus.NOT_FOUND, null);
     }
 }

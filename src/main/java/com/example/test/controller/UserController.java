@@ -1,7 +1,10 @@
 package com.example.test.controller;
 
 import com.example.test.model.UserDTO;
+import com.example.test.response.ResponseHandler;
 import com.example.test.service.UserServiceImpl;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,12 +19,14 @@ public class UserController {
         this.userService = userService;
     }
     @PostMapping(path = "")
-    public UserDTO registerUser(@RequestBody UserDTO user) {
-        return this.userService.createUser(user);
+    public ResponseEntity<Object> registerUser(@RequestBody UserDTO user) {
+        UserDTO userCreated = this.userService.createUser(user);
+        return ResponseHandler.createResponseEntity("User Created", HttpStatus.CREATED, userCreated);
     }
 
     @GetMapping(path = "/{id}")
-    public UserDTO fetchUserWithId(@PathVariable Long id) {
-        return this.userService.getUserById(id);
+    public ResponseEntity<Object> fetchUserWithId(@PathVariable Long id) {
+        UserDTO userFetched = this.userService.getUserById(id);
+        return ResponseHandler.createResponseEntity("", HttpStatus.OK, userFetched);
     }
 }
