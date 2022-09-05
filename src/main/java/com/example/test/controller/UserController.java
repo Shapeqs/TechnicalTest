@@ -1,14 +1,13 @@
 package com.example.test.controller;
 
-import com.example.test.entity.User;
 import com.example.test.model.UserDTO;
 import com.example.test.service.UserServiceImpl;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "api/v1/users")
+@Validated
 public class UserController {
 
     private final UserServiceImpl userService;

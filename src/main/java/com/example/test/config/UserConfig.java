@@ -20,30 +20,30 @@ public class UserConfig {
     }
 
     @Bean
-    CommandLineRunner populateDatabase(UserRepository repository) {
+    CommandLineRunner populateDatabase(UserRepository userRepository) {
         return args -> {
             User jean = new User(
                     "Jean",
-                    LocalDate.of(2000, Month.JANUARY, 5),
-                    "FRANCE",
-                    "06952857",
-                    "MALE"
+                    LocalDate.of(2000, Month.JANUARY, 27),
+                    "France",
+                    "+33695642584",
+                    "male"
             );
             User max = new User(
                     "Max",
-                    LocalDate.of(2001, Month.JANUARY, 5),
-                    "FRANCE",
-                    "06952857",
-                    "MALE"
+                    LocalDate.of(2001, Month.FEBRUARY, 26),
+                    "France",
+                    "0033695632145",
+                    "other"
             );
             User luli = new User(
                     "Luli",
-                    LocalDate.of(2001, Month.JANUARY, 5),
-                    "FRANCE",
-                    "06952857",
-                    "FEMALE"
+                    LocalDate.of(2002, Month.MARCH, 25),
+                    "France",
+                    "0584966235",
+                    "female"
             );
-            repository.saveAll(
+            userRepository.saveAll(
                     List.of(max, jean, luli)
             );
         };
