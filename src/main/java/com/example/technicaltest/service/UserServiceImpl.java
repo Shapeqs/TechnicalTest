@@ -1,10 +1,12 @@
 package com.example.technicaltest.service;
 
+import com.example.technicaltest.entity.Gender;
 import com.example.technicaltest.exception.*;
 import com.example.technicaltest.entity.Country;
 import com.example.technicaltest.entity.User;
 import com.example.technicaltest.model.UserDTO;
 import com.example.technicaltest.repository.CountryDAO;
+import com.example.technicaltest.repository.GenderDAO;
 import com.example.technicaltest.repository.UserDAO;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,16 +29,19 @@ public class UserServiceImpl  implements UserService {
 
     private final CountryDAO countryDAO;
 
+    private final GenderDAO genderDAO;
+
     private final ModelMapper mapper;
 
     @Autowired
     public UserServiceImpl(
             UserDAO userDAO,
             CountryDAO countryDAO,
-            ModelMapper mapper
+            GenderDAO genderDAO, ModelMapper mapper
     ) {
         this.userDAO = userDAO;
         this.countryDAO = countryDAO;
+        this.genderDAO = genderDAO;
         this.mapper = mapper;
     }
 
@@ -116,7 +122,7 @@ public class UserServiceImpl  implements UserService {
     }
 
     /**
-     * Check if country correspond to France
+     * Check if country exist in database
      * @param countryResidency the country residency of the user
      * @throws InvalidCountryResidencyException if country isn't valid
      */
@@ -132,20 +138,19 @@ public class UserServiceImpl  implements UserService {
     }
 
     /**
-     * Check if gender correspond to Male, Female or Other and nothing else
+     * Check if gender exist in database
      * @param gender the gender of the user
      * @throws InvalidGenderException if the gender isn't valid
      */
-    private String checkGender(String gender) {
-        String female = "female";
-        String male = "male";
-        String other = "other";
-        if (gender.compareToIgnoreCase(female) != 0
-        && gender.compareToIgnoreCase(male) != 0
-        && gender.compareToIgnoreCase(other) != 0) {
+    private Gender checkGender(Gender gender) {
+        if (gender == null) {
+            return null;
+        }
+        Gender existInDatabase = this.genderDAO.findByName(gender.getName());
+        if (existInDatabase == null) {
             throw new InvalidGenderException("Gender must be female, male or other");
         }
-        return gender;
+        return existInDatabase;
     }
 
     /**

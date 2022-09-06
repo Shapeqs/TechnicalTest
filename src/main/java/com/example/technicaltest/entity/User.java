@@ -29,9 +29,11 @@ public class User {
 
     private String phoneNumber;
 
-    private String gender;
+    @OneToOne
+    @JoinColumn(name = "gender_id")
+    private Gender gender;
 
-    public User(String name, LocalDate birthdate, Country countryResidency, String phoneNumber, String gender) {
+    public User(String name, LocalDate birthdate, Country countryResidency, String phoneNumber, Gender gender) {
         this.name = name;
         this.birthdate = birthdate;
         this.countryResidency = countryResidency;
@@ -39,7 +41,11 @@ public class User {
         this.gender = gender;
     }
 
-    public void setCountryResidencyFromDTO(String countryResidencyName) {
-        this.countryResidency = new Country(countryResidencyName);
+    public void setCountryResidencyFromDTO(String name) {
+        this.countryResidency = new Country(name);
+    }
+
+    public void setGenderFromDTO(String name) {
+        this.gender = new Gender(name);
     }
 }
