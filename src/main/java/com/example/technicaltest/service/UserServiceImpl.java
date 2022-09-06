@@ -1,9 +1,9 @@
 package com.example.technicaltest.service;
 
-import com.example.technicaltest.entity.Gender;
-import com.example.technicaltest.exception.*;
 import com.example.technicaltest.entity.Country;
+import com.example.technicaltest.entity.Gender;
 import com.example.technicaltest.entity.User;
+import com.example.technicaltest.exception.*;
 import com.example.technicaltest.model.UserDTO;
 import com.example.technicaltest.repository.CountryDAO;
 import com.example.technicaltest.repository.GenderDAO;
@@ -15,12 +15,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static org.springframework.util.StringUtils.capitalize;
 
 @Service
 public class UserServiceImpl  implements UserService {
@@ -67,20 +64,9 @@ public class UserServiceImpl  implements UserService {
      */
     @Override
     public UserDTO createUser(UserDTO userDTO) {
-        formatUserData(userDTO);
         User user = mapper.map(userDTO, User.class);
         checkData(user);
         return mapper.map(userDAO.save(user), UserDTO.class);
-    }
-
-    /**
-     * Format all user data
-     * @param user Container for all user data
-     */
-    private void formatUserData(UserDTO user) {
-        user.setName(formatUserName(user.getName().toLowerCase()));
-        user.setCountryResidency(capitalize(user.getCountryResidency().toLowerCase()));
-        user.setGender(capitalize(user.getGender().toLowerCase()));
     }
 
     /***
@@ -89,8 +75,8 @@ public class UserServiceImpl  implements UserService {
      */
     private void checkData(User user) {
         checkName(user.getName());
-        checkBirthdate(user.getBirthdate());
-        user.setCountryResidency(checkCountryResidency(user.getCountryResidency()));
+        user.setCountry(checkCountryResidency(user.getCountry()));
+        checkBirthdate(user.getBirthdate(), user.getCountry());
         user.setGender(checkGender(user.getGender()));
         checkPhoneNumber(user.getPhoneNumber());
     }
@@ -111,12 +97,12 @@ public class UserServiceImpl  implements UserService {
      * @param birthdate birthdate of the user
      * @throws InvalidBirthdateException if birthdate is invalid
      */
-    private void checkBirthdate(LocalDate birthdate) {
+    private void checkBirthdate(LocalDate birthdate, Country country) {
         LocalDate curDate = LocalDate.now();
         if (birthdate == null) {
             throw new InvalidBirthdateException("Birthdate cannot be null");
         }
-        if (Period.between(birthdate, curDate).getYears() < 18) {
+        if (Period.between(birthdate, curDate).getYears() < country.getAgeOfMajority()) {
             throw new InvalidBirthdateException("You must be an adult to register");
         }
     }
@@ -127,7 +113,7 @@ public class UserServiceImpl  implements UserService {
      * @throws InvalidCountryResidencyException if country isn't valid
      */
     private Country checkCountryResidency(Country countryResidency) {
-        if( countryResidency == null) {
+        if( countryResidency == null || countryResidency.getName() == null || countryResidency.getName().isBlank()) {
             throw new InvalidCountryResidencyException("Country residency cannot be null");
         }
         Country existInDatabase = this.countryDAO.findByName(countryResidency.getName());
@@ -143,7 +129,7 @@ public class UserServiceImpl  implements UserService {
      * @throws InvalidGenderException if the gender isn't valid
      */
     private Gender checkGender(Gender gender) {
-        if (gender == null) {
+        if (gender == null || gender.getName() == null || gender.getName().isBlank()) {
             return null;
         }
         Gender existInDatabase = this.genderDAO.findByName(gender.getName());
@@ -167,31 +153,5 @@ public class UserServiceImpl  implements UserService {
                 throw new InvalidPhoneNumberException("Invalid phone number format");
             }
         }
-    }
-
-    /**
-     * Format username to be presentable in database
-     * @param name the name of the user
-     * @return a well formatted name
-     */
-    private String formatUserName(String name) {
-        StringBuilder formated = new StringBuilder();
-        String[] names;
-        String sep;
-        if (name.contains("-")) {
-            names = name.split("-");
-            sep = "-";
-        } else if (name.contains(" ")) {
-            names = name.split(" ");
-            sep = " ";
-        } else {
-            return capitalize(name);
-        }
-        formated.append(capitalize(names[0]));
-        for (int i = 1; i < names.length; i++) {
-            formated.append(sep);
-            formated.append(capitalize(names[i]));
-        }
-        return formated.toString();
     }
 }

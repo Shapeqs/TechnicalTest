@@ -19,11 +19,16 @@ public class Country {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private int ageOfMajority;
+
     /**
-     * Create a new country object from a name
+     * Create a new country object from a name and an age of majority
      * @param name the country name
+     * @param ageOfMajority the age of majority in the country
      */
-    public Country(String name) {
+    public Country(String name, int ageOfMajority) {
         this.name = name;
+        this.ageOfMajority = ageOfMajority;
     }
 }

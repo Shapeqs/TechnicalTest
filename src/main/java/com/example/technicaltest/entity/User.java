@@ -24,8 +24,8 @@ public class User {
     private LocalDate birthdate;
 
     @OneToOne
-    @JoinColumn(name = "country_residency_id", nullable = false)
-    private Country countryResidency;
+    @JoinColumn(name = "country_id", nullable = false)
+    private Country country;
 
     private String phoneNumber;
 
@@ -33,16 +33,16 @@ public class User {
     @JoinColumn(name = "gender_id")
     private Gender gender;
 
-    public User(String name, LocalDate birthdate, Country countryResidency, String phoneNumber, Gender gender) {
+    public User(String name, LocalDate birthdate, Country country, String phoneNumber, Gender gender) {
         this.name = name;
         this.birthdate = birthdate;
-        this.countryResidency = countryResidency;
+        this.country = country;
         this.phoneNumber = phoneNumber;
         this.gender = gender;
     }
 
-    public void setCountryResidencyFromDTO(String name) {
-        this.countryResidency = new Country(name);
+    public void setCountryFromDTO(String name) {
+        this.country = new Country(name, 0);
     }
 
     public void setGenderFromDTO(String name) {

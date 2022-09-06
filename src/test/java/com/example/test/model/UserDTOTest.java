@@ -1,6 +1,7 @@
 package com.example.test.model;
 
 import com.example.technicaltest.entity.Country;
+import com.example.technicaltest.entity.Gender;
 import com.example.technicaltest.entity.User;
 import com.example.technicaltest.model.UserDTO;
 import org.junit.jupiter.api.Test;
@@ -21,16 +22,17 @@ public class UserDTOTest {
         user.setName("Jean-Marie");
         user.setBirthdate(LocalDate.of(1999, Month.JANUARY, 3));
         Country france = new Country("France");
-        user.setCountryResidency(france);
-        user.setGender("Male");
+        user.setCountry(france);
+        Gender male = new Gender("Male");
+        user.setGender(male);
         user.setPhoneNumber("06952857654");
 
         UserDTO userDTO = mapper.map(user, UserDTO.class);
         assertThat(user.getId()).isEqualTo(userDTO.getId());
         assertThat(user.getName()).isEqualTo(userDTO.getName());
         assertThat(user.getBirthdate()).isEqualTo(userDTO.getBirthdate());
-        assertThat(user.getCountryResidency().getName()).isEqualTo(userDTO.getCountryResidency());
-        assertThat(user.getGender()).isEqualTo(userDTO.getGender());
+        assertThat(user.getCountry().getName()).isEqualTo(userDTO.getCountryResidency());
+        assertThat(user.getGender().getName()).isEqualTo(userDTO.getGender());
         assertThat(user.getPhoneNumber()).isEqualTo(userDTO.getPhoneNumber());
     }
 
@@ -48,8 +50,8 @@ public class UserDTOTest {
         assertThat(userDTO.getId()).isEqualTo(user.getId());
         assertThat(userDTO.getName()).isEqualTo(user.getName());
         assertThat(userDTO.getBirthdate()).isEqualTo(user.getBirthdate());
-        assertThat(userDTO.getCountryResidency()).isEqualTo(user.getCountryResidency().getName());
-        assertThat(userDTO.getGender()).isEqualTo(user.getGender());
+        assertThat(userDTO.getCountryResidency()).isEqualTo(user.getCountry().getName());
+        assertThat(userDTO.getGender()).isEqualTo(user.getGender().getName());
         assertThat(userDTO.getPhoneNumber()).isEqualTo(user.getPhoneNumber());
     }
 }

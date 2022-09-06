@@ -46,7 +46,7 @@ public class FakerDataPopulator implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        Country france = new Country("France");
+        Country france = new Country("France", 18);
         countryDAO.save(france);
 
         Gender male = new Gender("Male");
