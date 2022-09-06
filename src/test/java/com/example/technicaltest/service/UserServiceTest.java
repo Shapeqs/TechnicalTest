@@ -3,7 +3,7 @@ package com.example.technicaltest.service;
 import com.example.technicaltest.entity.Country;
 import com.example.technicaltest.entity.Gender;
 import com.example.technicaltest.entity.User;
-import com.example.technicaltest.exception.UserNotFoundException;
+import com.example.technicaltest.exception.*;
 import com.example.technicaltest.model.UserDTO;
 import com.example.technicaltest.repository.CountryDAO;
 import com.example.technicaltest.repository.GenderDAO;
@@ -19,10 +19,16 @@ import org.modelmapper.TypeMap;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -44,30 +50,6 @@ public class UserServiceTest {
     @InjectMocks
     UserServiceImpl service;
 
-    /**
-     * Set up the mapper as MapperMaker configure it
-     */
-    @BeforeEach
-    public void setup() {
-        mapper = new ModelMapper();
-
-        TypeMap<User, UserDTO> propertyEntityToDTOMapper = mapper.createTypeMap(User.class, UserDTO.class);
-        propertyEntityToDTOMapper.addMappings(
-                map -> map.map(src -> src.getCountry().getName(), UserDTO::setCountry)
-        );
-        propertyEntityToDTOMapper.addMappings(
-                map -> map.map(src -> src.getGender().getName(), UserDTO::setGender)
-        );
-
-        TypeMap<UserDTO, User> propertyDTOToEntityMapper = mapper.createTypeMap(UserDTO.class, User.class);
-        propertyDTOToEntityMapper.addMappings(
-                map -> map.map(UserDTO::getCountry, User::setCountryFromDTO)
-        );
-        propertyDTOToEntityMapper.addMappings(
-                map -> map.map(UserDTO::getGender, User::setGenderFromDTO)
-        );
-    }
-
     @Test
     public void whenfetchingValidUserId_thenUserIsReturned() {
         User user = generateUser();
@@ -81,20 +63,22 @@ public class UserServiceTest {
     public void whenfetchingWrongUserId_thenUserNotFoundExceptionThrown() {
         Long id = 1L;
         given(userDAO.findById(any())).willReturn(Optional.empty());
-        assertThatThrownBy(() ->
-                service.getUserById(id)
-        ).isInstanceOf(UserNotFoundException.class)
-                .hasMessage("User do not exist");
+        assertThatExceptionOfType(UserNotFoundException.class)
+                .isThrownBy(() -> service.getUserById(id))
+                .withMessage("User do not exist");
     }
 
     @Test
-    public void creatingUser_thenUserIsReturned() {
-        final User user = generateUser();
-        final UserDTO userDTO = mapper.map(user, UserDTO.class);
+    public void whenCreatingUser_thenUserIsReturned() {
+        UserDTO userDTO = generateDTO();
 
-        given(countryDAO.findByName(any())).willReturn(generateCountry());
-        given(genderDAO.findByName(any())).willReturn(generateGender());
-        given(userDAO.save(any())).willReturn(user);
+        User user = generateUser();
+
+        given(this.mapper.map(userDTO, User.class)).willReturn(user);
+        given(this.mapper.map(user, UserDTO.class)).willReturn(userDTO);
+        given(this.userDAO.save(any())).willReturn(user);
+        given(this.countryDAO.findByName("France")).willReturn(generateCountry());
+        given(this.genderDAO.findByName("Male")).willReturn(generateGender());
 
         UserDTO created = this.service.createUser(userDTO);
         assertThat(created.getName()).isEqualTo(userDTO.getName());
@@ -104,7 +88,100 @@ public class UserServiceTest {
         assertThat(created.getPhoneNumber()).isEqualTo(userDTO.getPhoneNumber());
     }
 
-    private User generateUser() {
+    @Test
+    public void whenCreatingUserWithInvalidName_thenInvalidNameExceptionThrown() {
+        UserDTO userDTO = generateDTO();
+        User user = generateUser();
+        user.setName(" ");
+        given(this.mapper.map(userDTO, User.class)).willReturn(user);
+        assertThatExceptionOfType(InvalidUsernameException.class)
+                .isThrownBy(() -> this.service.createUser(userDTO))
+                .withMessage("You must put a name");
+    }
+
+    @Test
+    public void whenCreatingUserWithNullBirthdate_thenInvalidBirthdateExceptionThrown() {
+        UserDTO userDTO = generateDTO();
+        User user = generateUser();
+        user.setBirthdate(null);
+        given(this.mapper.map(userDTO, User.class)).willReturn(user);
+        given(this.countryDAO.findByName("France")).willReturn(generateCountry());
+        assertThatExceptionOfType(InvalidBirthdateException.class)
+                .isThrownBy(() -> this.service.createUser(userDTO))
+                .withMessage("Birthdate cannot be null");
+    }
+
+    @Test
+    public void whenCreatingUserWithInvalidBirthdate_thenInvalidBirthdateExceptionThrown() {
+        UserDTO userDTO = generateDTO();
+        User user = generateUser();
+        user.setBirthdate(LocalDate.now());
+        given(this.mapper.map(userDTO, User.class)).willReturn(user);
+        given(this.countryDAO.findByName("France")).willReturn(generateCountry());
+        assertThatExceptionOfType(InvalidBirthdateException.class)
+                .isThrownBy(() -> this.service.createUser(userDTO))
+                .withMessage("You must be an adult in your country to register");
+    }
+
+    @Test
+    public void whenCreatingUserWithNullCountry_thenInvalidCountryExceptionThrown() {
+        UserDTO userDTO = generateDTO();
+        User user = generateUser();
+        user.setCountry(null);
+        given(this.mapper.map(userDTO, User.class)).willReturn(user);
+        assertThatExceptionOfType(InvalidCountryException.class)
+                .isThrownBy(() -> this.service.createUser(userDTO))
+                .withMessage("Country residency cannot be null");
+    }
+
+    @Test
+    public void whenCreatingUserWithInvalidCountry_thenInvalidCountryExceptionThrown() {
+        UserDTO userDTO = generateDTO();
+        User user = generateUser();
+        user.setCountry(new Country("Italy", 18));
+        given(this.mapper.map(userDTO, User.class)).willReturn(user);
+        assertThatExceptionOfType(InvalidCountryException.class)
+                .isThrownBy(() -> this.service.createUser(userDTO))
+                .withMessage("Only French residents can register");
+    }
+
+    @Test
+    public void whenCreatingUserWithInvalidGender_thenInvalidGenderExceptionThrown() {
+        UserDTO userDTO = generateDTO();
+        User user = generateUser();
+        user.setGender(new Gender("Nope"));
+        given(this.mapper.map(userDTO, User.class)).willReturn(user);
+        given(this.countryDAO.findByName("France")).willReturn(generateCountry());
+        assertThatExceptionOfType(InvalidGenderException.class)
+                .isThrownBy(() -> this.service.createUser(userDTO))
+                .withMessage("Gender must be female, male or other");
+    }
+
+    @Test
+    public void whenCreatingUserWithInvalidPhone_thenInvalidPhoneExceptionThrown() {
+        UserDTO userDTO = generateDTO();
+        User user = generateUser();
+        user.setPhoneNumber("546546464985498");
+        given(this.mapper.map(userDTO, User.class)).willReturn(user);
+        given(this.countryDAO.findByName("France")).willReturn(generateCountry());
+        given(this.genderDAO.findByName("Male")).willReturn(generateGender());
+        assertThatExceptionOfType(InvalidPhoneNumberException.class)
+                .isThrownBy(() -> this.service.createUser(userDTO))
+                .withMessage("Invalid phone number format");
+    }
+
+    public UserDTO generateDTO() {
+        UserDTO user = new UserDTO();
+        user.setId(1L);
+        user.setName("Tester1");
+        user.setBirthdate(LocalDate.of(1999, Month.FEBRUARY, 1));
+        user.setCountry(generateCountry().getName());
+        user.setGender(generateGender().getName());
+        user.setPhoneNumber("+33695285727");
+        return user;
+    }
+
+    public User generateUser() {
         User user = new User();
         user.setId(1L);
         user.setName("Tester1");

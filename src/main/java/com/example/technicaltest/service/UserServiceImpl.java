@@ -34,7 +34,8 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(
             UserDAO userDAO,
             CountryDAO countryDAO,
-            GenderDAO genderDAO, ModelMapper mapper
+            GenderDAO genderDAO,
+            ModelMapper mapper
     ) {
         this.userDAO = userDAO;
         this.countryDAO = countryDAO;
@@ -66,7 +67,8 @@ public class UserServiceImpl implements UserService {
     public UserDTO createUser(UserDTO userDTO) {
         User user = mapper.map(userDTO, User.class);
         checkData(user);
-        return mapper.map(userDAO.save(user), UserDTO.class);
+        UserDTO map = mapper.map(userDAO.save(user), UserDTO.class);
+        return map;
     }
 
     /***
