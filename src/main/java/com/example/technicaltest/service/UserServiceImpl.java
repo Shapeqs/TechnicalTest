@@ -1,9 +1,11 @@
-package com.example.test.service;
+package com.example.technicaltest.service;
 
-import com.example.test.entity.User;
-import com.example.test.exception.*;
-import com.example.test.model.UserDTO;
-import com.example.test.repository.UserRepository;
+import com.example.technicaltest.exception.*;
+import com.example.technicaltest.entity.Country;
+import com.example.technicaltest.entity.User;
+import com.example.technicaltest.model.UserDTO;
+import com.example.technicaltest.repository.CountryDAO;
+import com.example.technicaltest.repository.UserDAO;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +22,20 @@ import static org.springframework.util.StringUtils.capitalize;
 @Service
 public class UserServiceImpl  implements UserService {
 
-    private final UserRepository repository;
+    private final UserDAO userDAO;
+
+    private final CountryDAO countryDAO;
 
     private final ModelMapper mapper;
 
     @Autowired
-    public UserServiceImpl(UserRepository repository, ModelMapper mapper) {
-        this.repository = repository;
+    public UserServiceImpl(
+            UserDAO userDAO,
+            CountryDAO countryDAO,
+            ModelMapper mapper
+    ) {
+        this.userDAO = userDAO;
+        this.countryDAO = countryDAO;
         this.mapper = mapper;
     }
 
@@ -38,7 +47,7 @@ public class UserServiceImpl  implements UserService {
      */
     @Override
     public UserDTO getUserById(Long id) {
-        Optional<User> user = repository.findById(id);
+        Optional<User> user = userDAO.findById(id);
         if (user.isEmpty()) {
             throw new UserNotFoundException("User do not exist");
         }
@@ -52,10 +61,10 @@ public class UserServiceImpl  implements UserService {
      */
     @Override
     public UserDTO createUser(UserDTO userDTO) {
-        checkData(userDTO);
         formatUserData(userDTO);
         User user = mapper.map(userDTO, User.class);
-        return mapper.map(repository.save(user), UserDTO.class);
+        checkData(user);
+        return mapper.map(userDAO.save(user), UserDTO.class);
     }
 
     /**
@@ -70,14 +79,14 @@ public class UserServiceImpl  implements UserService {
 
     /***
      * Simple method to check every data from the container is right
-     * @param userDTO Container of all data from user
+     * @param user Container of all data from user
      */
-    private void checkData(UserDTO userDTO) {
-        checkName(userDTO.getName());
-        checkBirthdate(userDTO.getBirthdate());
-        checkCountryResidency(userDTO.getCountryResidency());
-        checkGender(userDTO.getGender());
-        checkPhoneNumber(userDTO.getPhoneNumber());
+    private void checkData(User user) {
+        checkName(user.getName());
+        checkBirthdate(user.getBirthdate());
+        user.setCountryResidency(checkCountryResidency(user.getCountryResidency()));
+        user.setGender(checkGender(user.getGender()));
+        checkPhoneNumber(user.getPhoneNumber());
     }
 
     /**
@@ -111,13 +120,15 @@ public class UserServiceImpl  implements UserService {
      * @param countryResidency the country residency of the user
      * @throws InvalidCountryResidencyException if country isn't valid
      */
-    private void checkCountryResidency(String countryResidency) {
+    private Country checkCountryResidency(Country countryResidency) {
         if( countryResidency == null) {
             throw new InvalidCountryResidencyException("Country residency cannot be null");
         }
-        if (countryResidency.compareToIgnoreCase("France") != 0) {
+        Country existInDatabase = this.countryDAO.findByName(countryResidency.getName());
+        if (existInDatabase == null) {
             throw new InvalidCountryResidencyException("Only French residents can register");
         }
+        return existInDatabase;
     }
 
     /**
@@ -125,7 +136,7 @@ public class UserServiceImpl  implements UserService {
      * @param gender the gender of the user
      * @throws InvalidGenderException if the gender isn't valid
      */
-    private void checkGender(String gender) {
+    private String checkGender(String gender) {
         String female = "female";
         String male = "male";
         String other = "other";
@@ -134,6 +145,7 @@ public class UserServiceImpl  implements UserService {
         && gender.compareToIgnoreCase(other) != 0) {
             throw new InvalidGenderException("Gender must be female, male or other");
         }
+        return gender;
     }
 
     /**
@@ -159,7 +171,7 @@ public class UserServiceImpl  implements UserService {
      */
     private String formatUserName(String name) {
         StringBuilder formated = new StringBuilder();
-        String[] names = null;
+        String[] names;
         String sep;
         if (name.contains("-")) {
             names = name.split("-");

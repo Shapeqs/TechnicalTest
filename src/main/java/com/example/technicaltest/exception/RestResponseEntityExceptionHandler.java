@@ -1,6 +1,6 @@
-package com.example.test.exception;
+package com.example.technicaltest.exception;
 
-import com.example.test.response.ResponseHandler;
+import com.example.technicaltest.response.ResponseHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

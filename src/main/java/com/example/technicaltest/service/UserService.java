@@ -1,8 +1,6 @@
-package com.example.test.service;
+package com.example.technicaltest.service;
 
-import com.example.test.model.UserDTO;
-
-import java.util.List;
+import com.example.technicaltest.model.UserDTO;
 
 public interface UserService {
     UserDTO getUserById(Long id);

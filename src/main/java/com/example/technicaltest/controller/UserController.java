@@ -1,8 +1,8 @@
-package com.example.test.controller;
+package com.example.technicaltest.controller;
 
-import com.example.test.model.UserDTO;
-import com.example.test.response.ResponseHandler;
-import com.example.test.service.UserServiceImpl;
+import com.example.technicaltest.response.ResponseHandler;
+import com.example.technicaltest.service.UserServiceImpl;
+import com.example.technicaltest.model.UserDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

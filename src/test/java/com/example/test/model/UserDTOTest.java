@@ -1,6 +1,8 @@
 package com.example.test.model;
 
-import com.example.test.entity.User;
+import com.example.technicaltest.entity.Country;
+import com.example.technicaltest.entity.User;
+import com.example.technicaltest.model.UserDTO;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
@@ -18,7 +20,8 @@ public class UserDTOTest {
         user.setId(1L);
         user.setName("Jean-Marie");
         user.setBirthdate(LocalDate.of(1999, Month.JANUARY, 3));
-        user.setCountryResidency("France");
+        Country france = new Country("France");
+        user.setCountryResidency(france);
         user.setGender("Male");
         user.setPhoneNumber("06952857654");
 
@@ -26,7 +29,7 @@ public class UserDTOTest {
         assertThat(user.getId()).isEqualTo(userDTO.getId());
         assertThat(user.getName()).isEqualTo(userDTO.getName());
         assertThat(user.getBirthdate()).isEqualTo(userDTO.getBirthdate());
-        assertThat(user.getCountryResidency()).isEqualTo(userDTO.getCountryResidency());
+        assertThat(user.getCountryResidency().getName()).isEqualTo(userDTO.getCountryResidency());
         assertThat(user.getGender()).isEqualTo(userDTO.getGender());
         assertThat(user.getPhoneNumber()).isEqualTo(userDTO.getPhoneNumber());
     }
@@ -45,7 +48,7 @@ public class UserDTOTest {
         assertThat(userDTO.getId()).isEqualTo(user.getId());
         assertThat(userDTO.getName()).isEqualTo(user.getName());
         assertThat(userDTO.getBirthdate()).isEqualTo(user.getBirthdate());
-        assertThat(userDTO.getCountryResidency()).isEqualTo(user.getCountryResidency());
+        assertThat(userDTO.getCountryResidency()).isEqualTo(user.getCountryResidency().getName());
         assertThat(userDTO.getGender()).isEqualTo(user.getGender());
         assertThat(userDTO.getPhoneNumber()).isEqualTo(user.getPhoneNumber());
     }

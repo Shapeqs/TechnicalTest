@@ -1,4 +1,4 @@
-package com.example.test.model;
+package com.example.technicaltest.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

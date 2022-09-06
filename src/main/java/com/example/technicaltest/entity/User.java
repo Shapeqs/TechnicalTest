@@ -1,4 +1,4 @@
-package com.example.test.entity;
+package com.example.technicaltest.entity;
 
 import lombok.*;
 
@@ -23,18 +23,23 @@ public class User {
     @Column(nullable = false)
     private LocalDate birthdate;
 
-    @Column(nullable = false)
-    private String countryResidency;
+    @OneToOne
+    @JoinColumn(name = "country_residency_id", nullable = false)
+    private Country countryResidency;
 
     private String phoneNumber;
 
     private String gender;
 
-    public User(String name, LocalDate birthdate, String countryResidency, String phoneNumber, String gender) {
+    public User(String name, LocalDate birthdate, Country countryResidency, String phoneNumber, String gender) {
         this.name = name;
         this.birthdate = birthdate;
         this.countryResidency = countryResidency;
         this.phoneNumber = phoneNumber;
         this.gender = gender;
+    }
+
+    public void setCountryResidencyFromDTO(String countryResidencyName) {
+        this.countryResidency = new Country(countryResidencyName);
     }
 }

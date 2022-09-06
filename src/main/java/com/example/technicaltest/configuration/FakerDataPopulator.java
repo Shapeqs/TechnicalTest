@@ -1,7 +1,9 @@
-package com.example.test.configuration;
+package com.example.technicaltest.configuration;
 
-import com.example.test.entity.User;
-import com.example.test.repository.UserRepository;
+import com.example.technicaltest.entity.User;
+import com.example.technicaltest.entity.Country;
+import com.example.technicaltest.repository.CountryDAO;
+import com.example.technicaltest.repository.UserDAO;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,14 +18,21 @@ import java.util.List;
 @Configuration
 public class FakerDataPopulator implements CommandLineRunner {
 
-    private final UserRepository repository;
+    private final UserDAO userDAO;
+    private final CountryDAO countryDAO;
 
     /**
      * Database populator constructor
-     * @param repository the User Repository
+     *
+     * @param userDAO    the User Repository
+     * @param countryDAO
      */
-    public FakerDataPopulator(UserRepository repository) {
-        this.repository = repository;
+    public FakerDataPopulator(
+            UserDAO userDAO,
+            CountryDAO countryDAO
+    ) {
+        this.userDAO = userDAO;
+        this.countryDAO = countryDAO;
     }
 
     /**
@@ -31,28 +40,32 @@ public class FakerDataPopulator implements CommandLineRunner {
      */
     @Override
     public void run(String... args) {
+
+        Country france = new Country("France");
+        countryDAO.save(france);
+
         User jean = new User(
                 "Jean",
                 LocalDate.of(2000, Month.JANUARY, 27),
-                "France",
+                france,
                 "+33695642584",
                 "male"
         );
         User max = new User(
                 "Max",
                 LocalDate.of(2001, Month.FEBRUARY, 26),
-                "France",
+                france,
                 "0033695632145",
                 "other"
         );
         User luli = new User(
                 "Luli",
                 LocalDate.of(2002, Month.MARCH, 25),
-                "France",
+                france,
                 "0584966235",
                 "female"
         );
-        repository.saveAll(
+        userDAO.saveAll(
                 List.of(max, jean, luli)
         );
     }
