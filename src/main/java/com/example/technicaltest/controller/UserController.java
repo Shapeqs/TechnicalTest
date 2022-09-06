@@ -1,13 +1,14 @@
 package com.example.technicaltest.controller;
 
 import com.example.technicaltest.response.ResponseHandler;
-import com.example.technicaltest.service.UserServiceImpl;
+import com.example.technicaltest.service.UserService;
 import com.example.technicaltest.model.UserDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,9 +19,10 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class UserController {
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
-    public UserController(UserServiceImpl userService) {
+    @Autowired
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 

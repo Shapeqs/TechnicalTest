@@ -20,7 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
-public class UserServiceImpl  implements UserService {
+public class UserServiceImpl implements UserService {
 
     private final UserDAO userDAO;
 
@@ -103,22 +103,22 @@ public class UserServiceImpl  implements UserService {
             throw new InvalidBirthdateException("Birthdate cannot be null");
         }
         if (Period.between(birthdate, curDate).getYears() < country.getAgeOfMajority()) {
-            throw new InvalidBirthdateException("You must be an adult to register");
+            throw new InvalidBirthdateException("You must be an adult in your country to register");
         }
     }
 
     /**
      * Check if country exist in database
      * @param countryResidency the country residency of the user
-     * @throws InvalidCountryResidencyException if country isn't valid
+     * @throws InvalidCountryException if country isn't valid
      */
     private Country checkCountryResidency(Country countryResidency) {
-        if( countryResidency == null || countryResidency.getName() == null || countryResidency.getName().isBlank()) {
-            throw new InvalidCountryResidencyException("Country residency cannot be null");
+        if( countryResidency == null || StringUtils.isBlank(countryResidency.getName())) {
+            throw new InvalidCountryException("Country residency cannot be null");
         }
         Country existInDatabase = this.countryDAO.findByName(countryResidency.getName());
         if (existInDatabase == null) {
-            throw new InvalidCountryResidencyException("Only French residents can register");
+            throw new InvalidCountryException("Only French residents can register");
         }
         return existInDatabase;
     }
@@ -129,7 +129,7 @@ public class UserServiceImpl  implements UserService {
      * @throws InvalidGenderException if the gender isn't valid
      */
     private Gender checkGender(Gender gender) {
-        if (gender == null || gender.getName() == null || gender.getName().isBlank()) {
+        if (gender == null || StringUtils.isBlank(gender.getName())) {
             return null;
         }
         Gender existInDatabase = this.genderDAO.findByName(gender.getName());
@@ -147,7 +147,7 @@ public class UserServiceImpl  implements UserService {
     private void checkPhoneNumber(String phoneNumber) {
         String regex = "^(?:(?:\\+|00)33[\\s.-]{0,3}(?:\\(0\\)[\\s.-]{0,3})?|0)[1-9](?:(?:[\\s.-]?\\d{2}){4}|\\d{2}(?:[\\s.-]?\\d{3}){2})$";
         Pattern pattern = Pattern.compile(regex);
-        if (!phoneNumber.isBlank()) {
+        if (!StringUtils.isBlank(phoneNumber)) {
             Matcher matcher = pattern.matcher(phoneNumber);
             if (!matcher.matches()) {
                 throw new InvalidPhoneNumberException("Invalid phone number format");

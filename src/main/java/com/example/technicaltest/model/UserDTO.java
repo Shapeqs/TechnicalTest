@@ -16,7 +16,7 @@ public class UserDTO {
     private LocalDate birthdate;
 
     @Schema(example = "France")
-    private String countryResidency;
+    private String country;
 
     @Schema(example = "+33 6 99 55 66 32")
     private String phoneNumber;

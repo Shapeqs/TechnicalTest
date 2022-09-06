@@ -24,7 +24,7 @@ public class MapperMaker {
 
         TypeMap<User, UserDTO> propertyEntityToDTOMapper = mapper.createTypeMap(User.class, UserDTO.class);
         propertyEntityToDTOMapper.addMappings(
-                map -> map.map(src -> src.getCountry().getName(), UserDTO::setCountryResidency)
+                map -> map.map(src -> src.getCountry().getName(), UserDTO::setCountry)
         );
         propertyEntityToDTOMapper.addMappings(
                 map -> map.map(src -> src.getGender().getName(), UserDTO::setGender)
@@ -32,7 +32,7 @@ public class MapperMaker {
 
         TypeMap<UserDTO, User> propertyDTOToEntityMapper = mapper.createTypeMap(UserDTO.class, User.class);
         propertyDTOToEntityMapper.addMappings(
-                map -> map.map(UserDTO::getCountryResidency, User::setCountryFromDTO)
+                map -> map.map(UserDTO::getCountry, User::setCountryFromDTO)
         );
         propertyDTOToEntityMapper.addMappings(
                 map -> map.map(UserDTO::getGender, User::setGenderFromDTO)

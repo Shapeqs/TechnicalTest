@@ -22,7 +22,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     @ExceptionHandler(value = {
             InvalidUsernameException.class,
             InvalidBirthdateException.class,
-            InvalidCountryResidencyException.class,
+            InvalidCountryException.class,
             InvalidPhoneNumberException.class,
             InvalidGenderException.class
     })

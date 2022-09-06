@@ -1,12 +1,12 @@
 package com.example.technicaltest.exception;
 
-public class InvalidCountryResidencyException extends RuntimeException {
+public class InvalidCountryException extends RuntimeException {
 
     /**
      * Exception for user creation service when country residency in invalid
      * @param errorMessage error message
      */
-    public InvalidCountryResidencyException(String errorMessage) {
+    public InvalidCountryException(String errorMessage) {
         super(errorMessage);
     }
 }
