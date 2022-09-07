@@ -34,7 +34,7 @@ The app will start running at <http://localhost:8080>.
 ## API Reference
 
 To see more details run the app and checkout the swagger at <http://localhost:8080/swagger-ui/index.html>
-or you can checkout the Postman collection in  
+or you can checkout the Postman collection in [there](./doc/TechnicalTest.postman_collection.json)
 
 ### Get User Request
 
