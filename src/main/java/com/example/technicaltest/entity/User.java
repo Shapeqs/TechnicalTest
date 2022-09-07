@@ -33,6 +33,14 @@ public class User {
     @JoinColumn(name = "gender_id")
     private Gender gender;
 
+    /**
+     * Constructor of User Object to help initiate fake data into database
+     * @param name the name of the User
+     * @param birthdate the birthdate of the User
+     * @param country the country of the User
+     * @param phoneNumber the phoneNumber of the User
+     * @param gender the gender of the User
+     */
     public User(String name, LocalDate birthdate, Country country, String phoneNumber, Gender gender) {
         this.name = name;
         this.birthdate = birthdate;
@@ -41,10 +49,18 @@ public class User {
         this.gender = gender;
     }
 
+    /**
+     * Specific setter to help build User from UserDTO
+     * @param name the country contained in UserDTO
+     */
     public void setCountryFromDTO(String name) {
         this.country = new Country(name, 0);
     }
 
+    /**
+     * Specific setter to help build User from UserDTO
+     * @param name the gender contained in UserDTO
+     */
     public void setGenderFromDTO(String name) {
         this.gender = new Gender(name);
     }

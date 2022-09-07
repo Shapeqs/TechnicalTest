@@ -15,8 +15,8 @@ import org.springframework.context.annotation.Configuration;
 public class MapperMaker {
 
     /**
-     * Create a ModelMapper
-     * @return new ModelMapper
+     * Create a ModelMapper with a custom mapping for entity and model User
+     * @return new ModelMapper with the correct custom mapping
      */
     @Bean
     public ModelMapper modelMapper() {

@@ -19,6 +19,9 @@ public class Country {
     @Column(nullable = false)
     private String name;
 
+    /**
+     * Age of Majority set in the country as every country set their own majority age
+     */
     @Column(nullable = false)
     private int ageOfMajority;
 
