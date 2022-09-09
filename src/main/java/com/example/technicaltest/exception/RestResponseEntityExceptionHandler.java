@@ -27,7 +27,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
             InvalidGenderException.class
     })
     protected ResponseEntity<Object> handleCreateUserExceptions(RuntimeException exception) {
-        return ResponseHandler.createResponseEntity(exception.getMessage(), HttpStatus.BAD_REQUEST, null);
+        return ResponseHandler.createErrorResponseEntity(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -37,6 +37,6 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
      */
     @ExceptionHandler(value = {UserNotFoundException.class})
     protected ResponseEntity<Object> handleGetUserExceptions(RuntimeException exception) {
-        return ResponseHandler.createResponseEntity(exception.getMessage(), HttpStatus.NOT_FOUND, null);
+        return ResponseHandler.createErrorResponseEntity(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

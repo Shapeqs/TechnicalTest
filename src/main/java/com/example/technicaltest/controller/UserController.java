@@ -1,14 +1,12 @@
 package com.example.technicaltest.controller;
 
-import com.example.technicaltest.response.ResponseHandler;
-import com.example.technicaltest.service.UserService;
 import com.example.technicaltest.model.UserDTO;
+import com.example.technicaltest.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -21,7 +19,6 @@ public class UserController {
 
     private final UserService userService;
 
-    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -43,8 +40,7 @@ public class UserController {
                     content = @Content)})
     @PostMapping(path = "")
     public ResponseEntity<Object> registerUser(@RequestBody UserDTO userDTO) {
-        UserDTO userCreated = this.userService.createUser(userDTO);
-        return ResponseHandler.createResponseEntity("User Created", HttpStatus.CREATED, userCreated);
+        return new ResponseEntity<>(this.userService.createUser(userDTO), HttpStatus.CREATED);
     }
 
     /**
@@ -64,7 +60,6 @@ public class UserController {
                     content = @Content)})
     @GetMapping(path = "/{id}")
     public ResponseEntity<Object> fetchUserWithId(@PathVariable Long id) {
-        UserDTO userFetched = this.userService.getUserById(id);
-        return ResponseHandler.createResponseEntity("", HttpStatus.OK, userFetched);
+        return new ResponseEntity<>(this.userService.getUserById(id), HttpStatus.OK);
     }
 }

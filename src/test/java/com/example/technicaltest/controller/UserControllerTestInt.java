@@ -43,7 +43,7 @@ public class UserControllerTestInt {
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.id").isNumber());
+                .andExpect(jsonPath("$.id").isNumber());
     }
 
     @Test
@@ -59,6 +59,7 @@ public class UserControllerTestInt {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
@@ -69,7 +70,6 @@ public class UserControllerTestInt {
         String jsonRequest = mapper.writeValueAsString(userDTO);
 
         JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("data", null);
         jsonResponse.put("status", HttpStatus.BAD_REQUEST.value());
         jsonResponse.put("message", "You must put a name");
 
@@ -91,7 +91,6 @@ public class UserControllerTestInt {
         String jsonRequest = mapper.writeValueAsString(userDTO);
 
         JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("data", null);
         jsonResponse.put("status", HttpStatus.BAD_REQUEST.value());
         jsonResponse.put("message", "Birthdate cannot be null");
 
@@ -113,7 +112,6 @@ public class UserControllerTestInt {
         String jsonRequest = mapper.writeValueAsString(userDTO);
 
         JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("data", null);
         jsonResponse.put("status", HttpStatus.BAD_REQUEST.value());
         jsonResponse.put("message", "You must be an adult in your country to register");
 
@@ -135,7 +133,6 @@ public class UserControllerTestInt {
         String jsonRequest = mapper.writeValueAsString(userDTO);
 
         JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("data", null);
         jsonResponse.put("status", HttpStatus.BAD_REQUEST.value());
         jsonResponse.put("message", "Country residency cannot be null");
 
@@ -157,7 +154,6 @@ public class UserControllerTestInt {
         String jsonRequest = mapper.writeValueAsString(userDTO);
 
         JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("data", null);
         jsonResponse.put("status", HttpStatus.BAD_REQUEST.value());
         jsonResponse.put("message", "Only French residents can register");
 
@@ -179,7 +175,6 @@ public class UserControllerTestInt {
         String jsonRequest = mapper.writeValueAsString(userDTO);
 
         JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("data", null);
         jsonResponse.put("status", HttpStatus.BAD_REQUEST.value());
         jsonResponse.put("message", "Gender must be female, male or other");
 
@@ -201,7 +196,6 @@ public class UserControllerTestInt {
         String jsonRequest = mapper.writeValueAsString(userDTO);
 
         JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("data", null);
         jsonResponse.put("status", HttpStatus.BAD_REQUEST.value());
         jsonResponse.put("message", "Invalid phone number format");
 

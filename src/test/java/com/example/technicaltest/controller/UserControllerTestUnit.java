@@ -31,12 +31,7 @@ public class UserControllerTestUnit {
     @Test
     public void whenCreatingUser_thenReturnRightUserCreatedWithStatus201() {
         UserDTO user = generateUser();
-        ResponseEntity<Object> responseEntityExpected =
-                ResponseHandler.createResponseEntity(
-                        "User Created",
-                        HttpStatus.CREATED,
-                        user
-                );
+        ResponseEntity<Object> responseEntityExpected = new ResponseEntity<>(user, HttpStatus.CREATED);
         given(service.createUser(any(UserDTO.class))).willReturn(user);
 
         assertThat(controller.registerUser(user)).isEqualTo(responseEntityExpected);
@@ -116,12 +111,7 @@ public class UserControllerTestUnit {
         final Long id = 1L;
         UserDTO user = generateUser();
 
-        ResponseEntity<Object> responseEntityExpected =
-                ResponseHandler.createResponseEntity(
-                        "",
-                        HttpStatus.OK,
-                        user
-                );
+        ResponseEntity<Object> responseEntityExpected = new ResponseEntity<>(user, HttpStatus.OK);
         given(service.getUserById(id)).willReturn(user);
 
         assertThat(controller.fetchUserWithId(id)).isEqualTo(responseEntityExpected);

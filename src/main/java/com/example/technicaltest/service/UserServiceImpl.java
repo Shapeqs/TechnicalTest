@@ -10,7 +10,6 @@ import com.example.technicaltest.repository.GenderDAO;
 import com.example.technicaltest.repository.UserDAO;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -30,7 +29,6 @@ public class UserServiceImpl implements UserService {
 
     private final ModelMapper mapper;
 
-    @Autowired
     public UserServiceImpl(
             UserDAO userDAO,
             CountryDAO countryDAO,
@@ -45,21 +43,22 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Get user by its id
+     *
      * @param id the user id
      * @return a user Object if exist in database
      * @throws UserNotFoundException if user not exist
      */
     @Override
     public UserDTO getUserById(Long id) {
-        Optional<User> user = userDAO.findById(id);
-        if (user.isEmpty()) {
-            throw new UserNotFoundException("User do not exist");
-        }
-        return mapper.map(user.get(), UserDTO.class);
+        return mapper.map(
+                userDAO.findById(id).orElseThrow(
+                        () -> new UserNotFoundException("User do not exist")
+                ), UserDTO.class);
     }
 
     /**
      * Create user
+     *
      * @param userDTO Container for all user data
      * @return Container of all data from the created user
      */
@@ -67,8 +66,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO createUser(UserDTO userDTO) {
         User user = mapper.map(userDTO, User.class);
         checkData(user);
-        UserDTO map = mapper.map(userDAO.save(user), UserDTO.class);
-        return map;
+        return mapper.map(userDAO.save(user), UserDTO.class);
     }
 
     /***
@@ -85,6 +83,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Check if username is not blank
+     *
      * @param name the name of the user
      * @throws InvalidUsernameException if name is blank
      */
@@ -96,6 +95,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Check if birthdate is not null or user is younger than legal age
+     *
      * @param birthdate birthdate of the user
      * @throws InvalidBirthdateException if birthdate is invalid
      */
@@ -111,11 +111,12 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Check if country exist in database
+     *
      * @param countryResidency the country residency of the user
      * @throws InvalidCountryException if country isn't valid
      */
     private Country checkCountryResidency(Country countryResidency) {
-        if( countryResidency == null || StringUtils.isBlank(countryResidency.getName())) {
+        if (countryResidency == null || StringUtils.isBlank(countryResidency.getName())) {
             throw new InvalidCountryException("Country residency cannot be null");
         }
         Country existInDatabase = this.countryDAO.findByName(countryResidency.getName());
@@ -127,6 +128,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Check if gender exist in database
+     *
      * @param gender the gender of the user
      * @throws InvalidGenderException if the gender isn't valid
      */
@@ -143,6 +145,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Check if phone number is a valid format
+     *
      * @param phoneNumber the phone number of the user
      * @throws InvalidPhoneNumberException if phone number isn't valid
      */
